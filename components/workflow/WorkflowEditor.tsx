@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, DragEvent, useState } from "react";
+import { useCallback, useRef, DragEvent, useState, useEffect } from "react";
 import {
   ReactFlow,
   Background,
@@ -28,6 +28,9 @@ import {
   EndNode,
 } from "./nodes";
 import { WorkflowNodeData } from "@/lib/types";
+import { useAutoSave } from "@/lib/hooks/useAutoSave";
+import { useKeyboardShortcuts } from "@/lib/hooks/useKeyboardShortcuts";
+import { useToast } from "@/components/ui/toast";
 
 const nodeTypes: NodeTypes = {
   activity: ActivityNode,
@@ -46,6 +49,7 @@ export function WorkflowEditor() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { screenToFlowPosition } = useReactFlow();
   const [showAI, setShowAI] = useState(true);
+  const { addToast } = useToast();
 
   const nodes = useWorkflowStore((state) => state.nodes);
   const edges = useWorkflowStore((state) => state.edges);
@@ -53,10 +57,67 @@ export function WorkflowEditor() {
   const onNodesChange = useWorkflowStore((state) => state.onNodesChange);
   const onEdgesChange = useWorkflowStore((state) => state.onEdgesChange);
   const setEdges = useWorkflowStore((state) => state.setEdges);
+  const setNodes = useWorkflowStore((state) => state.setNodes);
   const addNode = useWorkflowStore((state) => state.addNode);
   const setSelectedNodeId = useWorkflowStore((state) => state.setSelectedNodeId);
+  const deleteNode = useWorkflowStore((state) => state.deleteNode);
 
   const selectedNode = nodes.find((n) => n.id === selectedNodeId) || null;
+
+  // Auto-save functionality
+  const { loadAutoSave, clearAutoSave, getLastSaveTime } = useAutoSave(nodes, edges, {
+    interval: 30000, // Auto-save every 30 seconds
+    enabled: true,
+  });
+
+  // Check for auto-saved workflow on mount
+  useEffect(() => {
+    const saved = loadAutoSave();
+    const lastSave = getLastSaveTime();
+
+    if (saved && saved.nodes.length > 1) {
+      // More than just start node
+      const shouldRestore = window.confirm(
+        `Found auto-saved workflow from ${new Date(lastSave!).toLocaleString()}. Restore it?`
+      );
+
+      if (shouldRestore) {
+        setNodes(saved.nodes);
+        setEdges(saved.edges);
+        addToast("Workflow restored from auto-save", "success");
+        clearAutoSave();
+      }
+    }
+  }, []);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: "s",
+      ctrlKey: true,
+      callback: (e) => {
+        e.preventDefault();
+        // Trigger save via custom event
+        window.dispatchEvent(new CustomEvent("workflow-save"));
+        addToast("Workflow saved (Ctrl+S)", "success");
+      },
+    },
+    {
+      key: "Delete",
+      callback: (e) => {
+        if (selectedNodeId) {
+          deleteNode(selectedNodeId);
+          addToast("Node deleted", "info");
+        }
+      },
+    },
+    {
+      key: "Escape",
+      callback: () => {
+        setSelectedNodeId(null);
+      },
+    },
+  ]);
 
   const onConnect = useCallback(
     (params: Connection) => {

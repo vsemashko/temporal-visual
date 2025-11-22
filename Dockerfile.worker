@@ -1,0 +1,45 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY worker/package*.json ./worker/
+COPY workflows ./workflows/
+
+# Install dependencies
+RUN cd worker && npm ci --only=production
+
+# Copy source code
+COPY worker/src ./worker/src
+COPY worker/tsconfig.json ./worker/
+
+# Build TypeScript
+RUN cd worker && npx tsc
+
+# Production image
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copy built worker
+COPY --from=builder /app/worker/dist ./worker/dist
+COPY --from=builder /app/worker/node_modules ./worker/node_modules
+COPY --from=builder /app/worker/package.json ./worker/
+COPY --from=builder /app/workflows ./workflows
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
+
+USER nodejs
+
+WORKDIR /app/worker
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "process.exit(0)" || exit 1
+
+CMD ["node", "dist/worker.js"]
