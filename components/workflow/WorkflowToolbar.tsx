@@ -1,13 +1,16 @@
 import { Save, Download, Upload, Play, Code, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useWorkflowStore } from "@/lib/store";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { CodeViewModal } from "./CodeViewModal";
 
 export function WorkflowToolbar() {
   const [showCodeModal, setShowCodeModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const nodes = useWorkflowStore((state) => state.nodes);
   const edges = useWorkflowStore((state) => state.edges);
+  const setNodes = useWorkflowStore((state) => state.setNodes);
+  const setEdges = useWorkflowStore((state) => state.setEdges);
 
   const handleSave = async () => {
     try {
@@ -34,6 +37,38 @@ export function WorkflowToolbar() {
     a.href = url;
     a.download = "workflow.json";
     a.click();
+  };
+
+  const handleImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+
+        if (data.nodes && data.edges) {
+          setNodes(data.nodes);
+          setEdges(data.edges);
+          alert("Workflow imported successfully!");
+        } else {
+          alert("Invalid workflow file format");
+        }
+      } catch (error) {
+        console.error("Failed to import workflow:", error);
+        alert("Failed to import workflow");
+      }
+    };
+    reader.readAsText(file);
+
+    // Reset input
+    event.target.value = "";
   };
 
   const handleGenerate = async () => {
@@ -76,10 +111,17 @@ export function WorkflowToolbar() {
             Export
           </Button>
 
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleImport}>
             <Upload className="w-4 h-4 mr-2" />
             Import
           </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleFileChange}
+            className="hidden"
+          />
 
           <Button variant="outline" size="sm" onClick={() => setShowCodeModal(true)}>
             <Code className="w-4 h-4 mr-2" />

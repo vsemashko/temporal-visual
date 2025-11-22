@@ -1,0 +1,68 @@
+{
+  "name": "Conditional Workflow with Decision",
+  "description": "User registration with email verification and conditional welcome flow",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "position": { "x": 250, "y": 50 },
+      "data": { "label": "Start" }
+    },
+    {
+      "id": "activity-1",
+      "type": "activity",
+      "position": { "x": 250, "y": 150 },
+      "data": {
+        "label": "Create User Account",
+        "activityName": "createUserAccount",
+        "timeout": "30s",
+        "retryPolicy": { "maxAttempts": 3 }
+      }
+    },
+    {
+      "id": "decision-1",
+      "type": "decision",
+      "position": { "x": 250, "y": 250 },
+      "data": {
+        "label": "Email Verified?",
+        "condition": "result_activity-1.emailVerified"
+      }
+    },
+    {
+      "id": "activity-2",
+      "type": "activity",
+      "position": { "x": 100, "y": 350 },
+      "data": {
+        "label": "Send Welcome Email",
+        "activityName": "sendWelcomeEmail",
+        "timeout": "30s",
+        "retryPolicy": { "maxAttempts": 2 }
+      }
+    },
+    {
+      "id": "activity-3",
+      "type": "activity",
+      "position": { "x": 400, "y": 350 },
+      "data": {
+        "label": "Send Verification Email",
+        "activityName": "sendVerificationEmail",
+        "timeout": "30s",
+        "retryPolicy": { "maxAttempts": 2 }
+      }
+    },
+    {
+      "id": "end-1",
+      "type": "end",
+      "position": { "x": 250, "y": 450 },
+      "data": { "label": "End" }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "start-1", "target": "activity-1" },
+    { "id": "e2", "source": "activity-1", "target": "decision-1" },
+    { "id": "e3", "source": "decision-1", "sourceHandle": "true", "target": "activity-2" },
+    { "id": "e4", "source": "decision-1", "sourceHandle": "false", "target": "activity-3" },
+    { "id": "e5", "source": "activity-2", "target": "end-1" },
+    { "id": "e6", "source": "activity-3", "target": "end-1" }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "name": "Parallel Processing Workflow",
+  "description": "Data pipeline with parallel processing of multiple tasks",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "position": { "x": 250, "y": 50 },
+      "data": { "label": "Start" }
+    },
+    {
+      "id": "activity-1",
+      "type": "activity",
+      "position": { "x": 250, "y": 150 },
+      "data": {
+        "label": "Fetch Data",
+        "activityName": "fetchData",
+        "timeout": "1m",
+        "retryPolicy": { "maxAttempts": 3 }
+      }
+    },
+    {
+      "id": "parallel-1",
+      "type": "parallel",
+      "position": { "x": 250, "y": 250 },
+      "data": {
+        "label": "Process in Parallel",
+        "branches": 3
+      }
+    },
+    {
+      "id": "activity-2",
+      "type": "activity",
+      "position": { "x": 100, "y": 350 },
+      "data": {
+        "label": "Transform Data",
+        "activityName": "transformData",
+        "timeout": "2m",
+        "retryPolicy": { "maxAttempts": 2 }
+      }
+    },
+    {
+      "id": "activity-3",
+      "type": "activity",
+      "position": { "x": 250, "y": 350 },
+      "data": {
+        "label": "Enrich Data",
+        "activityName": "enrichData",
+        "timeout": "2m",
+        "retryPolicy": { "maxAttempts": 2 }
+      }
+    },
+    {
+      "id": "activity-4",
+      "type": "activity",
+      "position": { "x": 400, "y": 350 },
+      "data": {
+        "label": "Validate Data",
+        "activityName": "validateData",
+        "timeout": "1m",
+        "retryPolicy": { "maxAttempts": 2 }
+      }
+    },
+    {
+      "id": "activity-5",
+      "type": "activity",
+      "position": { "x": 250, "y": 450 },
+      "data": {
+        "label": "Store Results",
+        "activityName": "storeResults",
+        "timeout": "1m",
+        "retryPolicy": { "maxAttempts": 3 }
+      }
+    },
+    {
+      "id": "end-1",
+      "type": "end",
+      "position": { "x": 250, "y": 550 },
+      "data": { "label": "End" }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "start-1", "target": "activity-1" },
+    { "id": "e2", "source": "activity-1", "target": "parallel-1" },
+    { "id": "e3", "source": "parallel-1", "target": "activity-2" },
+    { "id": "e4", "source": "parallel-1", "target": "activity-3" },
+    { "id": "e5", "source": "parallel-1", "target": "activity-4" },
+    { "id": "e6", "source": "activity-2", "target": "activity-5" },
+    { "id": "e7", "source": "activity-3", "target": "activity-5" },
+    { "id": "e8", "source": "activity-4", "target": "activity-5" },
+    { "id": "e9", "source": "activity-5", "target": "end-1" }
+  ]
+}

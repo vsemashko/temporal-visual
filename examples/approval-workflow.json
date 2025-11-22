@@ -1,0 +1,56 @@
+{
+  "name": "Approval Workflow with Signal",
+  "description": "Document processing that waits for manager approval via signal",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "position": { "x": 250, "y": 50 },
+      "data": { "label": "Start" }
+    },
+    {
+      "id": "activity-1",
+      "type": "activity",
+      "position": { "x": 250, "y": 150 },
+      "data": {
+        "label": "Process Document",
+        "activityName": "processDocument",
+        "timeout": "2m",
+        "retryPolicy": { "maxAttempts": 3 }
+      }
+    },
+    {
+      "id": "signal-1",
+      "type": "signal",
+      "position": { "x": 250, "y": 250 },
+      "data": {
+        "label": "Wait for Approval",
+        "signalName": "managerApproval",
+        "timeout": "24h"
+      }
+    },
+    {
+      "id": "activity-2",
+      "type": "activity",
+      "position": { "x": 250, "y": 350 },
+      "data": {
+        "label": "Finalize Document",
+        "activityName": "finalizeDocument",
+        "timeout": "1m",
+        "retryPolicy": { "maxAttempts": 2 }
+      }
+    },
+    {
+      "id": "end-1",
+      "type": "end",
+      "position": { "x": 250, "y": 450 },
+      "data": { "label": "End" }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "start-1", "target": "activity-1" },
+    { "id": "e2", "source": "activity-1", "target": "signal-1" },
+    { "id": "e3", "source": "signal-1", "target": "activity-2" },
+    { "id": "e4", "source": "activity-2", "target": "end-1" }
+  ]
+}

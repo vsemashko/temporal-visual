@@ -1,0 +1,57 @@
+{
+  "name": "Order Processing Workflow",
+  "description": "Simple e-commerce order processing with validation, payment, and shipping",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "position": { "x": 250, "y": 50 },
+      "data": { "label": "Start" }
+    },
+    {
+      "id": "activity-1",
+      "type": "activity",
+      "position": { "x": 250, "y": 150 },
+      "data": {
+        "label": "Validate Order",
+        "activityName": "validateOrder",
+        "timeout": "30s",
+        "retryPolicy": { "maxAttempts": 3 }
+      }
+    },
+    {
+      "id": "activity-2",
+      "type": "activity",
+      "position": { "x": 250, "y": 250 },
+      "data": {
+        "label": "Process Payment",
+        "activityName": "processPayment",
+        "timeout": "1m",
+        "retryPolicy": { "maxAttempts": 3 }
+      }
+    },
+    {
+      "id": "activity-3",
+      "type": "activity",
+      "position": { "x": 250, "y": 350 },
+      "data": {
+        "label": "Ship Order",
+        "activityName": "shipOrder",
+        "timeout": "5m",
+        "retryPolicy": { "maxAttempts": 2 }
+      }
+    },
+    {
+      "id": "end-1",
+      "type": "end",
+      "position": { "x": 250, "y": 450 },
+      "data": { "label": "End" }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "start-1", "target": "activity-1" },
+    { "id": "e2", "source": "activity-1", "target": "activity-2" },
+    { "id": "e3", "source": "activity-2", "target": "activity-3" },
+    { "id": "e4", "source": "activity-3", "target": "end-1" }
+  ]
+}

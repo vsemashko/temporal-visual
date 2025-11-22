@@ -135,11 +135,33 @@ export function WorkflowEditor() {
         </div>
       </div>
 
-      {showAI ? (
-        <AIAssistant onClose={() => setShowAI(false)} />
-      ) : (
-        <PropertyPanel selectedNode={selectedNode} />
-      )}
+      <div className="w-96 h-full flex flex-col border-l">
+        <div className="flex border-b">
+          <button
+            className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
+              showAI ? "bg-primary text-primary-foreground" : "bg-background hover:bg-accent"
+            }`}
+            onClick={() => setShowAI(true)}
+          >
+            AI Assistant
+          </button>
+          <button
+            className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
+              !showAI ? "bg-primary text-primary-foreground" : "bg-background hover:bg-accent"
+            }`}
+            onClick={() => setShowAI(false)}
+          >
+            Properties
+          </button>
+        </div>
+        <div className="flex-1 overflow-hidden">
+          {showAI ? (
+            <AIAssistant />
+          ) : (
+            <PropertyPanel selectedNode={selectedNode} />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
