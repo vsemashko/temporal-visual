@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  litellm:
+    build: .
+    container_name: litellm-proxy-standalone
+    ports:
+      - "4000:4000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - litellm-data:/app/data
+
+volumes:
+  litellm-data:

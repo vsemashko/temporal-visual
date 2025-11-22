@@ -1,0 +1,42 @@
+{
+  "name": "temporal-visual-ide",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "worker:dev": "tsx watch --clear-screen=false worker/src/worker.ts",
+    "worker:prod": "NODE_ENV=production tsx worker/src/worker.ts",
+    "litellm": "cd litellm && docker-compose up",
+    "temporal": "docker-compose up temporal"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@xyflow/react": "^12.3.0",
+    "@monaco-editor/react": "^4.7.0",
+    "@temporalio/client": "^1.10.0",
+    "openai": "^4.67.0",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "zustand": "^4.5.0",
+    "zod": "^3.23.0",
+    "lucide-react": "^0.460.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.5.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/node": "^20.16.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0",
+    "prettier": "^3.3.0"
+  }
+}

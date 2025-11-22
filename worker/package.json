@@ -1,0 +1,22 @@
+{
+  "name": "temporal-worker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/worker.ts",
+    "start": "NODE_ENV=production tsx src/worker.ts"
+  },
+  "dependencies": {
+    "@temporalio/worker": "^1.10.0",
+    "@temporalio/workflow": "^1.10.0",
+    "@temporalio/activity": "^1.10.0",
+    "@temporalio/client": "^1.10.0",
+    "dotenv": "^16.4.0",
+    "chokidar": "^3.6.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.16.0"
+  }
+}

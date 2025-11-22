@@ -1,0 +1,48 @@
+# Dependencies
+node_modules
+/.pnp
+.pnp.js
+worker/node_modules
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+worker/dist
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env
+.env*.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Temporal
+/workflows/definitions/*.ts
+/workflows/activities/*.ts
+
+# Keep the directories but ignore generated files
+!workflows/definitions/.gitkeep
+!workflows/activities/.gitkeep
+
+# LiteLLM
+litellm/*.db
+litellm/*.log
